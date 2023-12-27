@@ -1,0 +1,1 @@
+# typescript-document-rest-api
