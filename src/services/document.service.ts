@@ -3,17 +3,17 @@ import { Document } from "../models/document.model";
 import { CreateDocumentDTO } from "../dtos/document.dto";
 
 export class DocumentService {
-  private userRepository: DocumentRepository;
+  private documentRepository: DocumentRepository;
 
   constructor() {
-    this.userRepository = new DocumentRepository();
+    this.documentRepository = new DocumentRepository();
   }
 
   async getAllDocuments(): Promise<Document[]> {
-    return this.userRepository.getAllDocuments();
+    return this.documentRepository.getAllDocuments();
   }
 
   async createDocument(user: CreateDocumentDTO): Promise<{ id: number }> {
-    return this.userRepository.createDocument(user);
+    return this.documentRepository.createDocument(user);
   }
 }
