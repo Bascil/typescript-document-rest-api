@@ -34,7 +34,16 @@ This document outlines a document publishing API with versioning, designed to ma
 
    ```
 
-4. **API Endpoints**
+4. **Running Tests**
+
+   ```bash
+   npm test
+
+   Allows you to run unit tests including test coverage.
+
+   ```
+
+5. **API Endpoints**
 
    Create Document:
    POST /documents
