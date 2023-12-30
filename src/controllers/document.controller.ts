@@ -11,6 +11,17 @@ export class DocumentController {
     ctx.body = documents;
   }
 
+  static async getOneDocument(ctx: Context) {
+    try {
+      const documentId = parseInt(ctx.params.id);
+      ctx.status = 200;
+      ctx.body = { data: await documentService.getOneDocument(documentId) };
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = { error: "Internal Server Error" };
+    }
+  }
+
   static async createDocument(ctx: Context): Promise<void> {
     const documentDto: CreateDocumentDto = ctx.request.body;
 
@@ -24,7 +35,6 @@ export class DocumentController {
         ctx.status = 409;
         ctx.body = { error: "Concurrency Conflict" };
       } else {
-        console.error("Error creating document:", error);
         ctx.status = 500;
         ctx.body = { error: "Internal Server Error" };
       }

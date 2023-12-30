@@ -14,6 +14,7 @@ const router = new Router();
 router.prefix(`/api/v1`);
 
 router.get("/documents", DocumentController.getAllDocuments);
+router.get("/documents/:id", DocumentController.getOneDocument);
 
 router.post(
   "/documents",

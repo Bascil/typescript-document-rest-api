@@ -13,6 +13,10 @@ export class DocumentService {
     return this.documentRepository.getAllDocuments();
   }
 
+  async getOneDocument(documentId: number): Promise<Document> {
+    return await this.documentRepository.getOneDocument(documentId);
+  }
+
   async createDocument(dto: CreateDocumentDto): Promise<Document> {
     try {
       return await this.documentRepository.createDocument(dto);

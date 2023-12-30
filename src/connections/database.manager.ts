@@ -1,4 +1,4 @@
-import { Database } from "sqlite3";
+import { Database, Statement } from "sqlite3";
 
 class DatabaseManager {
   private static instance: DatabaseManager;
@@ -19,6 +19,41 @@ class DatabaseManager {
 
   getDatabase(): Database {
     return this.db;
+  }
+
+  getAll(sql: string, params: any[]): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.db.all(sql, params, (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
+
+  getOne(sql: string | Statement, params: any[] = []): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (typeof sql === "string") {
+        this.db.get(sql, params, (err, row) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        });
+      } else {
+        // Assuming sql is a prepared statement
+        sql.get(params, (err, row) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        });
+      }
+    });
   }
 
   private createTable() {

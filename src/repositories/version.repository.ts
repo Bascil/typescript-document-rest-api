@@ -1,11 +1,9 @@
-import { Database, RunResult } from "sqlite3";
-import DatabaseManager from "../connections/database.manager";
+import { RunResult } from "sqlite3";
+import { BaseRepository } from "./base.repository";
 
-export class VersionRepository {
-  private db: Database;
-
+export class VersionRepository extends BaseRepository {
   constructor() {
-    this.db = DatabaseManager.getInstance().getDatabase();
+    super();
   }
 
   async createVersion(documentId: number, state: string): Promise<number> {

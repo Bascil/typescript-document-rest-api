@@ -1,28 +1,40 @@
-import { Database, RunResult, Statement } from "sqlite3";
+import { Statement } from "sqlite3";
 import { Document } from "../models/document.model";
 import { CreateDocumentDto } from "../dtos/document.dto";
-import DatabaseManager from "../connections/database.manager";
+import { BaseRepository } from "./base.repository";
 
-export class DocumentRepository {
-  private db: Database;
+export class DocumentRepository extends BaseRepository {
   constructor() {
-    this.db = DatabaseManager.getInstance().getDatabase();
+    super();
   }
 
   async getAllDocuments(): Promise<Document[]> {
-    return new Promise<Document[]>((resolve, reject) => {
-      this.db.all(
-        "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
-          "d.creation_date as creationDate, v.state, MAX(v.version_number) AS latestVersion " +
-          "FROM documents d " +
-          "LEFT JOIN versions v ON d.document_id = v.document_id " +
-          "GROUP BY d.document_id",
-        (err, rows: any) => {
-          if (err) reject(err);
-          else resolve(rows);
-        }
-      );
-    });
+    return await this.getAll(
+      "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
+        "d.creation_date as creationDate, v.state, MAX(v.version_number) AS latestVersion " +
+        "FROM documents d " +
+        "LEFT JOIN versions v ON d.document_id = v.document_id " +
+        "GROUP BY d.document_id"
+    );
+  }
+
+  async getOneDocument(documentId: number): Promise<any> {
+    const document = await this.getOne(
+      "SELECT * FROM documents WHERE document_id = ?",
+      [documentId]
+    );
+
+    const versions = await this.getAll(
+      "SELECT * FROM versions WHERE document_id = ? ORDER BY version_number DESC",
+      [documentId]
+    );
+
+    return {
+      id: document.id,
+      title: document.title,
+      content: document.content,
+      versions,
+    };
   }
 
   async createDocument(dto: CreateDocumentDto): Promise<Document> {
@@ -52,7 +64,7 @@ export class DocumentRepository {
 
       // If an existing document ID is provided, it means we are updating an existing document
       if (dto.documentId) {
-        const currentState = await this.runQuery(checkPublishedStateStatement, [
+        const currentState = await this.getOne(checkPublishedStateStatement, [
           dto.documentId,
         ]);
 
@@ -68,7 +80,7 @@ export class DocumentRepository {
         ]);
 
         // Check the existing version and increment it
-        const existingVersionResult = await this.runQuery(
+        const existingVersionResult = await this.getOne(
           checkExistingVersionStatement,
           [dto.documentId]
         );
@@ -107,7 +119,7 @@ export class DocumentRepository {
       this.db.run("COMMIT");
 
       // Return the document or any other result
-      const document = await this.runQuery(
+      const document = await this.getOne(
         "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
           "d.creation_date as creationDate, d.last_updated_date as lastUpdatedDate," +
           "v.state, MAX(v.version_number) AS latestVersion " +
@@ -133,47 +145,5 @@ export class DocumentRepository {
       insertDocumentStatement.finalize();
       insertVersionStatement.finalize();
     }
-  }
-
-  private runStatement(
-    statement: Statement,
-    params: any[]
-  ): Promise<RunResult> {
-    return new Promise((resolve, reject) => {
-      statement.run(params, function (this: RunResult, err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(this);
-        }
-      });
-    });
-  }
-
-  private runQuery(sql: string | Statement, params: any[] = []): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (typeof sql === "string") {
-        this.db.get(sql, params, (err, row) => {
-          if (err) {
-            console.error(`Error executing query: ${sql}`);
-            console.error(`Parameters: ${params}`);
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      } else {
-        // Assuming sql is a prepared statement
-        sql.get(params, (err, row) => {
-          if (err) {
-            console.error(`Error executing prepared statement`);
-            console.error(`Parameters: ${params}`);
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      }
-    });
   }
 }
