@@ -21,41 +21,6 @@ class DatabaseManager {
     return this.db;
   }
 
-  getAll(sql: string, params: any[]): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.db.all(sql, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
-  }
-
-  getOne(sql: string | Statement, params: any[] = []): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (typeof sql === "string") {
-        this.db.get(sql, params, (err, row) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      } else {
-        // Assuming sql is a prepared statement
-        sql.get(params, (err, row) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        });
-      }
-    });
-  }
-
   private createTable() {
     this.db.run(`
       CREATE TABLE IF NOT EXISTS documents (
