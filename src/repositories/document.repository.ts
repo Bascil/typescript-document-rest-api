@@ -73,7 +73,7 @@ export class DocumentRepository extends BaseRepository {
         }
 
         // update document
-        await this.runStatement(updateDocumentStatement, [
+        await this.executeQuery(updateDocumentStatement, [
           dto.title,
           dto.content,
           dto.documentId,
@@ -91,7 +91,7 @@ export class DocumentRepository extends BaseRepository {
         const newVersionNumber = existingVersionNumber + 1;
 
         // Run the statement to insert the new version
-        await this.runStatement(insertVersionStatement, [
+        await this.executeQuery(insertVersionStatement, [
           dto.documentId,
           newVersionNumber,
           dto.creatorId,
@@ -99,7 +99,7 @@ export class DocumentRepository extends BaseRepository {
         ]);
       } else {
         // Run the statement to insert the document
-        await this.runStatement(insertDocumentStatement, [
+        await this.executeQuery(insertDocumentStatement, [
           dto.title,
           dto.content,
           dto.creatorId,
@@ -108,7 +108,7 @@ export class DocumentRepository extends BaseRepository {
         //@ts-ignore
         const documentId = insertDocumentStatement.lastID;
         // Run the statement to insert the version
-        await this.runStatement(insertVersionStatement, [
+        await this.executeQuery(insertVersionStatement, [
           documentId,
           1,
           dto.creatorId,

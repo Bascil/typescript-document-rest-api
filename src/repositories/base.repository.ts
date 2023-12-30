@@ -7,6 +7,7 @@ export class BaseRepository {
   constructor() {
     this.db = DatabaseManager.getInstance().getDatabase();
   }
+
   async getAll(sql: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       this.db.all(sql, params, (err, rows) => {
@@ -42,7 +43,7 @@ export class BaseRepository {
     });
   }
 
-  async runStatement(statement: Statement, params: any[]): Promise<RunResult> {
+  async executeQuery(statement: Statement, params: any[]): Promise<RunResult> {
     return new Promise((resolve, reject) => {
       statement.run(params, function (this: RunResult, err) {
         if (err) {
