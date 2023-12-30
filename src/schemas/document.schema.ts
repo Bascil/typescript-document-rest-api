@@ -6,6 +6,7 @@ export const DocumentSchema = {
     content: Joi.string().min(2).max(20).required(),
     creatorId: Joi.number().required(),
     state: Joi.string().required().valid("draft", "published"),
+    documentId: Joi.number().allow("").optional(),
   }),
 
   updateDocument: Joi.object({

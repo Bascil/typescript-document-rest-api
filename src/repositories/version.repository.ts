@@ -1,24 +1,11 @@
 import { Database, RunResult } from "sqlite3";
+import DatabaseManager from "../connections/database.manager";
 
 export class VersionRepository {
   private db: Database;
 
   constructor() {
-    this.db = new Database("./data.db");
-    // this.createTable();
-  }
-
-  private createTable() {
-    this.db.run(`
-    CREATE TABLE versions (
-      version_id INTEGER PRIMARY KEY,
-      document_id INTEGER,
-      version_number INTEGER,
-      state TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (document_id) REFERENCES documents(document_id)
-    )
-  `);
+    this.db = DatabaseManager.getInstance().getDatabase();
   }
 
   async createVersion(documentId: number, state: string): Promise<number> {

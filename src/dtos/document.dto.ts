@@ -5,6 +5,7 @@ export interface CreateDocumentDto {
   state: string;
   creationDate?: Date;
   creatorId?: number;
+  documentId?: number;
   lastUpdatedDate?: Date;
   lastUpdateAuthorId?: number;
 }

@@ -15,9 +15,9 @@ export class DocumentController {
     const documentDto: CreateDocumentDto = ctx.request.body;
 
     try {
-      const documentId = await documentService.createDocument(documentDto);
+      const document = await documentService.createDocument(documentDto);
       ctx.status = 201;
-      ctx.body = { document_id: documentId };
+      ctx.body = { data: document };
     } catch (error) {
       if (error.code === "SQLITE_BUSY") {
         // Handle concurrency conflict
