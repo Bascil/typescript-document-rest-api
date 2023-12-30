@@ -36,6 +36,6 @@ describe("Document Controller", () => {
     await DocumentController.createDocument(mockContext);
 
     expect(mockContext.status).toBe(201);
-    expect(mockContext.body).toHaveProperty("document_id");
+    expect(mockContext.body).toHaveProperty("data");
   });
 });
