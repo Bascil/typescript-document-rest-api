@@ -39,8 +39,6 @@ This document outlines a document publishing API with versioning, designed to ma
    ```bash
    npm test
 
-   Allows you to run unit tests including test coverage.
-
    ```
 
 ## API Endpoints

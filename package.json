@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "test": "jest --coverage"
+    "test": "jest --verbose"
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./tests/setup.ts"
+    ]
   },
   "keywords": [],
   "author": "",

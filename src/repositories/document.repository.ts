@@ -60,7 +60,7 @@ export class DocumentRepository extends BaseRepository {
     );
 
     return {
-      id: document.id,
+      id: document.document_id,
       title: document.title,
       content: document.content,
       versions,
