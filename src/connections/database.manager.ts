@@ -1,4 +1,4 @@
-import { Database, Statement } from "sqlite3";
+import { Database } from "sqlite3";
 
 class DatabaseManager {
   private static instance: DatabaseManager;
@@ -7,7 +7,7 @@ class DatabaseManager {
   private constructor() {
     // Initialize the database connection
     this.db = new Database("./data.db");
-    this.createTable(); // Create tables when the manager is initialized
+    this.createTables(); // Create tables when the manager is initialized
   }
 
   static getInstance(): DatabaseManager {
@@ -21,7 +21,7 @@ class DatabaseManager {
     return this.db;
   }
 
-  private createTable() {
+  private createTables() {
     this.db.run(`
       CREATE TABLE IF NOT EXISTS documents (
         document_id INTEGER PRIMARY KEY,
@@ -40,7 +40,7 @@ class DatabaseManager {
         version_id INTEGER PRIMARY KEY,
         document_id INTEGER,
         version_number INTEGER,
-        modified_by INTEGER,
+        author_id INTEGER,
         state TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (document_id) REFERENCES documents(document_id)

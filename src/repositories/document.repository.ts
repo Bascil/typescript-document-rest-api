@@ -1,6 +1,6 @@
 import { Statement } from "sqlite3";
 import { Document } from "../models/document.model";
-import { CreateDocumentDto } from "../dtos/document.dto";
+import { CreateDocumentDto, UpdateDocumentDto } from "../dtos/document.dto";
 import { BaseRepository } from "./base.repository";
 
 export class DocumentRepository extends BaseRepository {
@@ -11,7 +11,9 @@ export class DocumentRepository extends BaseRepository {
   async getAllDocuments(): Promise<Document[]> {
     return await this.getAll(
       "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
-        "d.creation_date as creationDate, v.state, MAX(v.version_number) AS latestVersion " +
+        "d.last_update_author_id as lastUpdateAuthorId, " +
+        "d.creation_date as creationDate, d.last_updated_date as lastUpdatedDate," +
+        "v.state, MAX(v.version_number) AS latestVersion " +
         "FROM documents d " +
         "LEFT JOIN versions v ON d.document_id = v.document_id " +
         "GROUP BY d.document_id"
@@ -39,15 +41,78 @@ export class DocumentRepository extends BaseRepository {
 
   async createDocument(dto: CreateDocumentDto): Promise<Document> {
     const insertDocumentStatement: Statement = this.db.prepare(
-      "INSERT INTO documents (title, content, creator_id, last_updated_date) VALUES (?, ?, ?,  CURRENT_TIMESTAMP)"
-    );
-
-    const updateDocumentStatement: Statement = this.db.prepare(
-      "UPDATE documents SET title = ?, content = ?, last_updated_date = CURRENT_TIMESTAMP WHERE document_id = ?"
+      "INSERT INTO documents (title, content, creator_id, last_update_author_id, last_updated_date) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)"
     );
 
     const insertVersionStatement: Statement = this.db.prepare(
-      "INSERT INTO versions (document_id, version_number, modified_by, state) VALUES (?, ?, ?, ?)"
+      "INSERT INTO versions (document_id, version_number, author_id, state) VALUES (?, ?, ?, ?)"
+    );
+
+    try {
+      // Run the statements within the transaction
+      this.db.run("BEGIN TRANSACTION");
+
+      // Run the statement to insert the document
+      await this.executeQuery(insertDocumentStatement, [
+        dto.title,
+        dto.content,
+        dto.userId,
+        dto.userId,
+      ]);
+
+      //@ts-ignore
+      const documentId = insertDocumentStatement.lastID;
+      // Run the statement to insert the version
+      await this.executeQuery(insertVersionStatement, [
+        documentId,
+        1,
+        dto.userId,
+        dto.state,
+      ]);
+
+      // Commit the transaction
+      this.db.run("COMMIT");
+
+      // Return the document or any other result
+      const document = await this.getOne(
+        "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
+          "d.last_update_author_id as lastUpdateAuthorId, " +
+          "d.creation_date as creationDate, d.last_updated_date as lastUpdatedDate," +
+          "v.state, MAX(v.version_number) AS latestVersion " +
+          "FROM documents d " +
+          "LEFT JOIN versions v ON d.document_id = v.document_id " +
+          "WHERE d.document_id = ? " +
+          "GROUP BY d.document_id",
+
+        [documentId]
+      );
+
+      if (!document) {
+        throw new Error("Document not found");
+      }
+
+      return document;
+    } catch (error) {
+      // Rollback the transaction in case of an error
+      this.db.run("ROLLBACK");
+      throw error;
+    } finally {
+      // Ensure the statements are finalized
+      insertDocumentStatement.finalize();
+      insertVersionStatement.finalize();
+    }
+  }
+
+  async updateDocument(
+    documentId: number,
+    dto: UpdateDocumentDto
+  ): Promise<Document> {
+    const updateDocumentStatement: Statement = this.db.prepare(
+      "UPDATE documents SET title = ?, content = ?, last_update_author_id = ?, last_updated_date = CURRENT_TIMESTAMP WHERE document_id = ?"
+    );
+
+    const insertVersionStatement: Statement = this.db.prepare(
+      "INSERT INTO versions (document_id, version_number, author_id, state) VALUES (?, ?, ?, ?)"
     );
 
     const checkExistingVersionStatement: Statement = this.db.prepare(
@@ -63,9 +128,9 @@ export class DocumentRepository extends BaseRepository {
       this.db.run("BEGIN TRANSACTION");
 
       // If an existing document ID is provided, it means we are updating an existing document
-      if (dto.documentId) {
+      if (documentId) {
         const currentState = await this.getOne(checkPublishedStateStatement, [
-          dto.documentId,
+          documentId,
         ]);
 
         if (currentState && currentState.state === "published") {
@@ -76,13 +141,14 @@ export class DocumentRepository extends BaseRepository {
         await this.executeQuery(updateDocumentStatement, [
           dto.title,
           dto.content,
-          dto.documentId,
+          dto.userId,
+          documentId,
         ]);
 
         // Check the existing version and increment it
         const existingVersionResult = await this.getOne(
           checkExistingVersionStatement,
-          [dto.documentId]
+          [documentId]
         );
 
         const existingVersionNumber = existingVersionResult.max_version || 0;
@@ -92,26 +158,9 @@ export class DocumentRepository extends BaseRepository {
 
         // Run the statement to insert the new version
         await this.executeQuery(insertVersionStatement, [
-          dto.documentId,
-          newVersionNumber,
-          dto.creatorId,
-          dto.state,
-        ]);
-      } else {
-        // Run the statement to insert the document
-        await this.executeQuery(insertDocumentStatement, [
-          dto.title,
-          dto.content,
-          dto.creatorId,
-        ]);
-
-        //@ts-ignore
-        const documentId = insertDocumentStatement.lastID;
-        // Run the statement to insert the version
-        await this.executeQuery(insertVersionStatement, [
           documentId,
-          1,
-          dto.creatorId,
+          newVersionNumber,
+          dto.userId,
           dto.state,
         ]);
       }
@@ -121,14 +170,14 @@ export class DocumentRepository extends BaseRepository {
       // Return the document or any other result
       const document = await this.getOne(
         "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
+          "d.last_update_author_id as lastUpdateAuthorId, " +
           "d.creation_date as creationDate, d.last_updated_date as lastUpdatedDate," +
           "v.state, MAX(v.version_number) AS latestVersion " +
           "FROM documents d " +
           "LEFT JOIN versions v ON d.document_id = v.document_id " +
           "WHERE d.document_id = ? " +
           "GROUP BY d.document_id",
-        //@ts-ignore
-        [dto.documentId || insertDocumentStatement.lastID]
+        [documentId]
       );
 
       if (!document) {
@@ -142,7 +191,7 @@ export class DocumentRepository extends BaseRepository {
       throw error;
     } finally {
       // Ensure the statements are finalized
-      insertDocumentStatement.finalize();
+      updateDocumentStatement.finalize();
       insertVersionStatement.finalize();
     }
   }
