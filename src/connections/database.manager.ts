@@ -29,6 +29,7 @@ class DatabaseManager {
         content text,
         version_number INT DEFAULT 1,
         creator_id INTEGER,
+        last_update_author_id INTEGER NULL,
         creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         last_updated_date DATETIME DEFAULT CURRENT_TIMESTAMP
       )
