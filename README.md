@@ -141,23 +141,26 @@ Create a new document by sending a POST request to the `/api/v1/documents` endpo
   "userId": 1,
   "state": "draft"
 }
+```
 
-### Sample response
+#### Sample response
 
 HTTP/1.1 201 Created
 Content-Type: application/json
+
+```json
 {
-   "data": {
-      "id": 1,
-      "title": "Test Document",
-      "content": "very meaningful document content",
-      "creatorId": 1,
-      "lastUpdateAuthorId": 1,
-      "creationDate": "2023-12-31 05:42:08",
-      "lastUpdatedDate": "2023-12-31 05:42:08",
-      "state": "draft",
-      "latestVersion": 1
-    }
+  "data": {
+    "id": 1,
+    "title": "Test Document",
+    "content": "very meaningful document content",
+    "creatorId": 1,
+    "lastUpdateAuthorId": 1,
+    "creationDate": "2023-12-31 05:42:08",
+    "lastUpdatedDate": "2023-12-31 05:42:08",
+    "state": "draft",
+    "latestVersion": 1
+  }
 }
 ```
 
@@ -174,23 +177,25 @@ Update an existing document by sending a PUT request to the `/api/v1/documents/{
   "userId": 1,
   "state": "published"
 }
+```
 
-
-### Sample response
+#### Sample response
 
 HTTP/1.1 200 OK
 Content-Type: application/json
+
+```json
 {
-   "data": {
-      "id": 3,
-      "title": "Test Updated Document",
-      "content": "Very meaningful document content update",
-      "creatorId": 1,
-      "lastUpdateAuthorId": 1,
-      "creationDate": "2023-12-31 05:49:44",
-      "lastUpdatedDate": "2023-12-31 05:52:47",
-      "state": "published",
-      "latestVersion": 3
-    }
+  "data": {
+    "id": 3,
+    "title": "Test Updated Document",
+    "content": "Very meaningful document content update",
+    "creatorId": 1,
+    "lastUpdateAuthorId": 1,
+    "creationDate": "2023-12-31 05:49:44",
+    "lastUpdatedDate": "2023-12-31 05:52:47",
+    "state": "published",
+    "latestVersion": 3
+  }
 }
 ```
