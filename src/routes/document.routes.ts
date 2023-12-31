@@ -14,9 +14,11 @@ declare module "koa" {
 const router = new Router();
 router.prefix(config.apiVersion);
 
+// content serving apis
 router.get("/documents", DocumentController.getAllDocuments);
 router.get("/documents/:id/:state?", DocumentController.getOneDocument);
 
+// editor serving apis
 router.post(
   "/documents",
   validator(DocumentSchema.createDocument),
