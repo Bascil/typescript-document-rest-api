@@ -2,6 +2,7 @@ import Router from "koa-router";
 import { DocumentController } from "../controllers/document.controller";
 import { DocumentSchema } from "../schemas/document.schema";
 import { validator } from "../middlewares/validator";
+import { config } from "../config";
 
 declare module "koa" {
   interface Request {
@@ -11,7 +12,7 @@ declare module "koa" {
 }
 
 const router = new Router();
-router.prefix(`/api/v1`);
+router.prefix(config.apiVersion);
 
 // document apis
 router.get("/documents", DocumentController.getAllDocuments);

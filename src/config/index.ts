@@ -1,7 +1,11 @@
-const config: { name: string; baseAPIRoute: string; port: number | string } = {
-  name: "Document Service",
-  baseAPIRoute: "api/v1",
-  port: process.env.PORT || 8080,
-};
+interface Config {
+  service: string;
+  apiVersion: string;
+  port: number | string;
+}
 
-export default config;
+export const config: Config = {
+  service: "Document Service",
+  apiVersion: `/api/v1`,
+  port: process.env.PORT || 3000,
+};
