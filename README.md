@@ -43,6 +43,82 @@ This document outlines a document publishing API with versioning, designed to ma
 
 ## API Endpoints
 
+## Editor APIs
+
+### Creating a Document
+
+Endpoint: `POST /api/v1/documents`
+
+Create a new document by sending a POST request to the `/api/v1/documents` endpoint with the following JSON payload:
+
+```json
+{
+  "title": "Test Document",
+  "content": "Very meaningful document content",
+  "userId": 1,
+  "state": "draft"
+}
+```
+
+#### Sample response
+
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Test Document",
+    "content": "very meaningful document content",
+    "creatorId": 1,
+    "lastUpdateAuthorId": 1,
+    "creationDate": "2023-12-31 05:42:08",
+    "lastUpdatedDate": "2023-12-31 05:42:08",
+    "state": "draft",
+    "latestVersion": 1
+  }
+}
+```
+
+### Updating an existing document
+
+Endpoint: `PUT /api/v1/documents/{documentId}`
+
+Update an existing document by sending a PUT request to the `/api/v1/documents/{documentId}` endpoint with the following JSON payload:
+
+```json
+{
+  "title": "Test Updated Document",
+  "content": "Very meaningful document content update",
+  "userId": 1,
+  "state": "published"
+}
+```
+
+#### Sample response
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+```json
+{
+  "data": {
+    "id": 3,
+    "title": "Test Updated Document",
+    "content": "Very meaningful document content update",
+    "creatorId": 1,
+    "lastUpdateAuthorId": 1,
+    "creationDate": "2023-12-31 05:49:44",
+    "lastUpdatedDate": "2023-12-31 05:52:47",
+    "state": "published",
+    "latestVersion": 3
+  }
+}
+```
+
+## Content Serving APIs
+
 ### Get document by id
 
 Endpoint: `GET /api/v1/documents/{documentId}/{state?}`
@@ -206,79 +282,7 @@ Endpoint: `GET /api/v1/documents?state=published`
 }
 ```
 
-### Creating a Document
-
-Endpoint: `POST /api/v1/documents`
-
-Create a new document by sending a POST request to the `/api/v1/documents` endpoint with the following JSON payload:
-
-```json
-{
-  "title": "Test Document",
-  "content": "Very meaningful document content",
-  "userId": 1,
-  "state": "draft"
-}
-```
-
-#### Sample response
-
-HTTP/1.1 201 Created
-Content-Type: application/json
-
-```json
-{
-  "data": {
-    "id": 1,
-    "title": "Test Document",
-    "content": "very meaningful document content",
-    "creatorId": 1,
-    "lastUpdateAuthorId": 1,
-    "creationDate": "2023-12-31 05:42:08",
-    "lastUpdatedDate": "2023-12-31 05:42:08",
-    "state": "draft",
-    "latestVersion": 1
-  }
-}
-```
-
-### Updating an existing document
-
-Endpoint: `PUT /api/v1/documents/{documentId}`
-
-Update an existing document by sending a PUT request to the `/api/v1/documents/{documentId}` endpoint with the following JSON payload:
-
-```json
-{
-  "title": "Test Updated Document",
-  "content": "Very meaningful document content update",
-  "userId": 1,
-  "state": "published"
-}
-```
-
-#### Sample response
-
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-```json
-{
-  "data": {
-    "id": 3,
-    "title": "Test Updated Document",
-    "content": "Very meaningful document content update",
-    "creatorId": 1,
-    "lastUpdateAuthorId": 1,
-    "creationDate": "2023-12-31 05:49:44",
-    "lastUpdatedDate": "2023-12-31 05:52:47",
-    "state": "published",
-    "latestVersion": 3
-  }
-}
-```
-
-## Response normalization
+## Response Normalization
 
 1. **Not found error**
 
