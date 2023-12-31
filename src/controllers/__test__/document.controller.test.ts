@@ -3,12 +3,6 @@ import { DocumentController } from "../document.controller";
 import { DocumentRepository } from "../../repositories/document.repository";
 import { VersionRepository } from "../../repositories/version.repository";
 
-// Mock SQLite database
-const mockDb: any = {
-  run: jest.fn(),
-  get: jest.fn(),
-};
-
 // Mock Koa context
 const mockContext: Context = {
   request: {

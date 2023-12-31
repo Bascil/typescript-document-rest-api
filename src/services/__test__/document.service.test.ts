@@ -25,7 +25,6 @@ describe("DocumentService", () => {
     const documents = await documentService.getAllDocuments({});
 
     expect(documents).toHaveLength(2);
-    // Add more expectations based on the structure of your documents
   });
 
   it("should get one document by ID", async () => {
@@ -41,7 +40,6 @@ describe("DocumentService", () => {
     const document = await documentService.getOneDocument(1);
 
     expect(document).toHaveProperty("id", 1);
-    // Add more expectations based on the structure of your documents
   });
 
   it("should create a document", async () => {
@@ -65,11 +63,9 @@ describe("DocumentService", () => {
     );
 
     expect(createdDocument).toHaveProperty("id", 1);
-    // Add more expectations based on the structure of your documents
   });
 
   it("should update a document", async () => {
-    // Mock the behavior of the updateDocument method in the repository
     // Mock the behavior of the updateDocument method in the repository
     (
       DocumentRepository.prototype.updateDocument as jest.Mock
