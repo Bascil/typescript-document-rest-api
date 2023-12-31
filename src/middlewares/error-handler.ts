@@ -5,14 +5,26 @@ export async function errorHandler(ctx: Context, next: Next): Promise<void> {
   try {
     await next();
   } catch (error) {
-    if (error instanceof CustomError) {
-      // Handle your custom error
-      ctx.status = error.statusCode || 500;
-      ctx.body = { error: error.message };
-    } else {
-      // Handle other unexpected errors
-      ctx.status = 500;
-      ctx.body = { error: "Internal Server Error" };
-    }
+    handleAppError(ctx, error);
   }
+}
+
+function handleAppError(ctx: Context, error: any) {
+  let statusCode = 500;
+  let errorMessage = "Something went wrong";
+
+  if (error instanceof CustomError) {
+    statusCode = error.statusCode;
+    errorMessage = error.message;
+  }
+
+  ctx.status = statusCode;
+  ctx.body = {
+    errors: [
+      {
+        message: errorMessage,
+        status: error.statusCode,
+      },
+    ],
+  };
 }

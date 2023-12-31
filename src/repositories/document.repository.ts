@@ -2,6 +2,9 @@ import { Statement } from "sqlite3";
 import { Document } from "../models/document.model";
 import { CreateDocumentDto, UpdateDocumentDto } from "../dtos/document.dto";
 import { BaseRepository } from "./base.repository";
+import { BadRequestError } from "../errors/bad-request-error";
+import { NotFoundError } from "../errors/not-found-error";
+import { DatabaseError } from "../errors/database-error";
 
 export class DocumentRepository extends BaseRepository {
   constructor() {
@@ -44,6 +47,10 @@ export class DocumentRepository extends BaseRepository {
       "SELECT * FROM documents WHERE document_id = ?",
       [documentId]
     );
+
+    if (!document) {
+      throw new NotFoundError("Document with the specified id not found");
+    }
 
     const versions = await this.getAll(
       `SELECT * FROM versions WHERE document_id = ?  ${
@@ -109,7 +116,7 @@ export class DocumentRepository extends BaseRepository {
       );
 
       if (!document) {
-        throw new Error("Document not found");
+        throw new DatabaseError("Document not found");
       }
 
       return document;
@@ -155,7 +162,7 @@ export class DocumentRepository extends BaseRepository {
         ]);
 
         if (currentState && currentState.state === "published") {
-          throw new Error("Published documents cannot be edited.");
+          throw new BadRequestError("Published documents cannot be edited.");
         }
 
         // update document
@@ -202,7 +209,7 @@ export class DocumentRepository extends BaseRepository {
       );
 
       if (!document) {
-        throw new Error("Document not found");
+        throw new DatabaseError("Document not found");
       }
 
       return document;

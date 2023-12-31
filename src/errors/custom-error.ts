@@ -1,8 +1,8 @@
 export class CustomError extends Error {
-  public readonly statusCode: number;
-
-  constructor(message: string, statusCode: number) {
+  constructor(public message: string, public statusCode: number = 500) {
     super(message);
-    this.statusCode = statusCode;
+
+    // extend built in class
+    Object.setPrototypeOf(this, CustomError.prototype);
   }
 }

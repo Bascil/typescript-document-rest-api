@@ -279,3 +279,57 @@ Content-Type: application/json
   }
 }
 ```
+
+## Response normalization
+
+1. **Not found error**
+
+```json
+{
+  "errors": [
+    {
+      "message": "Document with the specified id not found",
+      "status": 404
+    }
+  ]
+}
+```
+
+2. **Bad request error**
+
+```json
+{
+  "errors": [
+    {
+      "message": "Published documents cannot be edited",
+      "status": 400
+    }
+  ]
+}
+```
+
+3. **Internal server error**
+
+```json
+{
+  "errors": [
+    {
+      "message": "Something went wrong",
+      "status": 500
+    }
+  ]
+}
+```
+
+4. **Validation error**
+
+```json
+{
+  "errors": [
+    {
+      "message": "title length must be at least 2 characters long",
+      "field": "title"
+    }
+  ]
+}
+```
