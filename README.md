@@ -47,7 +47,7 @@ This document outlines a document publishing API with versioning, designed to ma
 
 ### Get document by id
 
-Endpoint: `GET /api/v1/documents/{documentId}`
+Endpoint: `GET /api/v1/documents/{documentId}/{state?}`
 
 ```json
 {
@@ -78,6 +78,31 @@ Endpoint: `GET /api/v1/documents/{documentId}`
         "author_id": 1,
         "state": "draft",
         "created_at": "2023-12-31 05:49:44"
+      }
+    ]
+  }
+}
+```
+
+### Get the most recent published version of a document
+
+Endpoint: `GET /api/v1/documents/{documentId}/{state?}`
+
+Example: `GET /api/v1/documents/4/published`
+
+```json
+{
+  "data": {
+    "title": "Test Updated Document",
+    "content": "Very meaningful document content update",
+    "versions": [
+      {
+        "version_id": 5,
+        "document_id": 3,
+        "version_number": 3,
+        "author_id": 1,
+        "state": "published",
+        "created_at": "2023-12-31 05:52:47"
       }
     ]
   }
@@ -128,7 +153,62 @@ Endpoint: `GET /api/v1/documents`
 }
 ```
 
-### Create a New Document
+### Getting only draft versions of the document
+
+Endpoint: `GET /api/v1/documents?state=draft`
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Test Document",
+      "content": "very meaningful document content",
+      "creatorId": 1,
+      "lastUpdateAuthorId": 1,
+      "creationDate": "2023-12-31 05:42:08",
+      "lastUpdatedDate": "2023-12-31 05:42:08",
+      "state": "draft",
+      "latestVersion": 1
+    },
+    {
+      "id": 2,
+      "title": "Test Document",
+      "content": "very meaningful document content",
+      "creatorId": 1,
+      "lastUpdateAuthorId": 1,
+      "creationDate": "2023-12-31 05:48:41",
+      "lastUpdatedDate": "2023-12-31 05:48:41",
+      "state": "draft",
+      "latestVersion": 1
+    }
+  ]
+}
+```
+
+### Getting only published versions of the document
+
+Endpoint: `GET /api/v1/documents?state=published`
+
+```json
+{
+  "data": [
+    {
+      "id": 3,
+      "title": "Test Updated Document",
+      "content": "Very meaningful document content update",
+      "creatorId": 1,
+      "lastUpdateAuthorId": 1,
+      "creationDate": "2023-12-31 05:49:44",
+      "lastUpdatedDate": "2023-12-31 05:52:47",
+      "state": "published",
+      "latestVersion": 3
+    }
+  ]
+}
+```
+
+### Creating a Document
 
 Endpoint: `POST /api/v1/documents`
 
@@ -164,7 +244,7 @@ Content-Type: application/json
 }
 ```
 
-### Update a Document
+### Updating an existing document
 
 Endpoint: `PUT /api/v1/documents/{documentId}`
 

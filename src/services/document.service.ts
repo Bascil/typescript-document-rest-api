@@ -9,12 +9,12 @@ export class DocumentService {
     this.documentRepository = new DocumentRepository();
   }
 
-  async getAllDocuments(): Promise<Document[]> {
-    return this.documentRepository.getAllDocuments();
+  async getAllDocuments(filters: any): Promise<Document[]> {
+    return this.documentRepository.getAllDocuments(filters);
   }
 
-  async getOneDocument(documentId: number): Promise<Document> {
-    return await this.documentRepository.getOneDocument(documentId);
+  async getOneDocument(documentId: number, state?: string): Promise<Document> {
+    return await this.documentRepository.getOneDocument(documentId, state);
   }
 
   async createDocument(dto: CreateDocumentDto): Promise<Document> {

@@ -8,27 +8,48 @@ export class DocumentRepository extends BaseRepository {
     super();
   }
 
-  async getAllDocuments(): Promise<Document[]> {
-    return await this.getAll(
-      "SELECT d.document_id as id, d.title, d.content, d.creator_id as creatorId," +
-        "d.last_update_author_id as lastUpdateAuthorId, " +
-        "d.creation_date as creationDate, d.last_updated_date as lastUpdatedDate," +
-        "v.state, MAX(v.version_number) AS latestVersion " +
-        "FROM documents d " +
-        "LEFT JOIN versions v ON d.document_id = v.document_id " +
-        "GROUP BY d.document_id"
-    );
+  async getAllDocuments(filters): Promise<Document[]> {
+    const { state } = filters;
+    let query = `
+      SELECT
+        d.document_id as id,
+        d.title,
+        d.content,
+        d.creator_id as creatorId,
+        d.last_update_author_id as lastUpdateAuthorId,
+        d.creation_date as creationDate,
+        d.last_updated_date as lastUpdatedDate,
+        v.state,
+        MAX(v.version_number) AS latestVersion
+      FROM
+        documents d
+      LEFT JOIN
+        versions v ON d.document_id = v.document_id
+      GROUP BY
+        d.document_id
+    `;
+
+    const params = [];
+
+    if (state) {
+      query += " HAVING v.state = ?";
+      params.push(state);
+    }
+
+    return await this.getAll(query, params);
   }
 
-  async getOneDocument(documentId: number): Promise<any> {
+  async getOneDocument(documentId: number, state?: string): Promise<any> {
     const document = await this.getOne(
       "SELECT * FROM documents WHERE document_id = ?",
       [documentId]
     );
 
     const versions = await this.getAll(
-      "SELECT * FROM versions WHERE document_id = ? ORDER BY version_number DESC",
-      [documentId]
+      `SELECT * FROM versions WHERE document_id = ?  ${
+        state ? "AND state = ?" : ""
+      } ORDER BY version_number DESC`,
+      [documentId, state]
     );
 
     return {

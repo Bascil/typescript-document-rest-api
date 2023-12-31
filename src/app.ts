@@ -17,6 +17,6 @@ app.use(documentRoutes.routes());
 app.use(documentRoutes.allowedMethods());
 
 // error handler
-app.use(errorHandler);
+// app.use(errorHandler);
 
 export default app;

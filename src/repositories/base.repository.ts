@@ -1,5 +1,5 @@
 import { Database, RunResult, Statement } from "sqlite3";
-import DatabaseManager from "../connections/database.manager";
+import DatabaseManager from "../database/database.manager";
 
 export class BaseRepository {
   protected db: Database;

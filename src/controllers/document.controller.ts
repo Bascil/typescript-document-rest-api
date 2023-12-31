@@ -7,14 +7,23 @@ const documentService = new DocumentService();
 
 export class DocumentController {
   static async getAllDocuments(ctx: Context) {
-    ctx.body = { data: await documentService.getAllDocuments() };
+    try {
+      const filters = ctx.request.query;
+      ctx.body = { data: await documentService.getAllDocuments(filters) };
+    } catch (error) {
+      console.error(error);
+      ctx.status = 500;
+      ctx.body = { error: error };
+    }
   }
 
   static async getOneDocument(ctx: Context) {
     try {
-      const documentId = parseInt(ctx.params.id);
+      const { id, state } = ctx.params;
       ctx.status = 200;
-      ctx.body = { data: await documentService.getOneDocument(documentId) };
+      ctx.body = {
+        data: await documentService.getOneDocument(parseInt(id), state),
+      };
     } catch (error) {
       ctx.status = 500;
       ctx.body = { error: "Internal Server Error" };
