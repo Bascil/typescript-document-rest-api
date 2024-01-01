@@ -1,5 +1,3 @@
-// src/errors/MultipleErrorsError.ts
-
 import { CustomError } from "./custom-error";
 
 export class BadRequestError extends CustomError {

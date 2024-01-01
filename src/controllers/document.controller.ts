@@ -1,4 +1,3 @@
-// src/controllers/document.controller.ts
 import { Context } from "koa";
 import { CreateDocumentDto, UpdateDocumentDto } from "../dtos/document.dto";
 import { DocumentService } from "../services/document.service";

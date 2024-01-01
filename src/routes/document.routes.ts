@@ -18,7 +18,7 @@ router.prefix(config.apiVersion);
 router.get("/documents", DocumentController.getAllDocuments);
 router.get("/documents/:id/:state?", DocumentController.getOneDocument);
 
-// editor serving apis
+// editor apis
 router.post(
   "/documents",
   validator(DocumentSchema.createDocument),
